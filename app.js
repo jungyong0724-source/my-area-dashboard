@@ -369,19 +369,40 @@ document.addEventListener('DOMContentLoaded', () => {
     resetSelect(typeL4, '세분류');
     const lc = typeL1.value, mc = typeL2.value;
     if (!mc) return;
-    Object.entries(INDUSTRY_TYPE_DATA[lc].mid[mc].small).sort((a,b) => a[0].localeCompare(b[0])).forEach(([code, v]) => {
-      typeL3.appendChild(new Option(v.name, code));
+
+    const parentName = INDUSTRY_TYPE_DATA[lc].mid[mc].name;
+    const smallEntries = Object.entries(INDUSTRY_TYPE_DATA[lc].mid[mc].small)
+      .sort((a, b) => a[0].localeCompare(b[0]));
+
+    // 소분류가 1개이고 이름이 NULL → 자동 스킵, 세분류 바로 채우기
+    if (smallEntries.length === 1 && smallEntries[0][1].name === 'NULL') {
+      const [sc, sv] = smallEntries[0];
+      typeL3.innerHTML = `<option value="${sc}">${parentName}</option>`;
+      typeL3.disabled = true; // 자동 선택 상태 (변경 불필요)
+      Object.entries(sv.detail).sort((a, b) => a[0].localeCompare(b[0])).forEach(([code, name]) => {
+        typeL4.appendChild(new Option(name, code));
+      });
+      typeL4.disabled = false;
+      return;
+    }
+
+    // 일반 케이스: NULL 항목은 부모(중분류)명으로 대체 표시
+    smallEntries.forEach(([code, v]) => {
+      const displayName = v.name === 'NULL' ? parentName : v.name;
+      typeL3.appendChild(new Option(displayName, code));
     });
     typeL3.disabled = false;
   });
+
   typeL3.addEventListener('change', () => {
     resetSelect(typeL4, '세분류');
     const lc = typeL1.value, mc = typeL2.value, sc = typeL3.value;
     if (!sc) return;
-    const detailData = INDUSTRY_TYPE_DATA[lc].mid[mc].small[sc].detail;
-    Object.entries(detailData).sort((a,b) => a[0].localeCompare(b[0])).forEach(([code, name]) => {
-      typeL4.appendChild(new Option(name, code));
-    });
+    Object.entries(INDUSTRY_TYPE_DATA[lc].mid[mc].small[sc].detail)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .forEach(([code, name]) => {
+        typeL4.appendChild(new Option(name, code));
+      });
     typeL4.disabled = false;
   });
 
