@@ -233,6 +233,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('detail-fax').textContent = 'F. ' + (data.fax || '-');
     document.getElementById('detail-revenue').textContent = '매출 규모 ' + (data.revenue || '-');
     document.getElementById('detail-area').textContent = '면적 ' + data.area;
+    document.getElementById('detail-deposit').textContent = data.deposit || '-';
+    document.getElementById('detail-monthly-rent').textContent = data.monthlyRent || '-';
+    document.getElementById('detail-employees').textContent = data.employees || '-';
+    document.getElementById('detail-homepage').textContent = data.homepage || '-';
+    document.getElementById('detail-email').textContent = data.email || '-';
 
     navigateTo('screen-detail');
     setTimeout(() => initDetailMap(data.lat, data.lng), 200);

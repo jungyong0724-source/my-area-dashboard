@@ -505,6 +505,34 @@ body {
   background: #e8eeea;
 }
 
+/* 지도 하단 추가 정보 블록 */
+.detail-extra-block {
+  padding: 16px 16px 20px;
+  background: var(--white);
+}
+.detail-extra-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.detail-extra-table tr {
+  border-bottom: 1px solid var(--border-color);
+}
+.detail-extra-table tr:last-child {
+  border-bottom: none;
+}
+.detail-extra-table td {
+  padding: 9px 4px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+.extra-label {
+  color: var(--text-secondary);
+  width: 80px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 /* ── 길안내 모달 ──────────────────────────── */
 .modal-overlay {
   position: absolute;
