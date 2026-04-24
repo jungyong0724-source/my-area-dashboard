@@ -1,0 +1,8 @@
+﻿SELECT                TOP 1000 A.*, B.*, C.*, D.*, E.* 
+  FROM                CESCOEIS.DBO.TB_KODATA_SONFRAN0400                        AS A WITH (NOLOCK)                                                                        -- 주단위 신규가맹점 정보
+                        INNER JOIN CESCOEIS.DBO.TB_KODATA_SONFRAN0202        AS B WITH (NOLOCK) ON A.FRANMNGNO        = B.FRAN_MNG_NO        -- 월단위 신규가맹점 정보
+                        LEFT OUTER JOIN CESCOEIS.DBO.TB_KODATA_KED50D5        AS C WITH (NOLOCK) ON A.BZNO                        = C.BZNO                -- 사업장 정보
+                        LEFT OUTER JOIN CESCOEIS.DBO.TB_KODATA_KED50D1        AS D WITH (NOLOCK) ON C.KEDCD                = D.KEDCD                -- 기업 개요
+                        LEFT OUTER JOIN CESCOEIS.DBO.TB_KODATA_KED5003        AS E WITH (NOLOCK) ON C.KEDCD                = E.KEDCD                -- 주요 재무정보
+ WHERE                A.BASEDT = '20251113'
+   AND                NOT EXISTS (SELECT X.FRANMNGNO FROM CESCOEIS.DBO.TB_KODATA_SONFRAN0500 AS X WHERE A.FRANMNGNO = X.FRANMNGNO)
