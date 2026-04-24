@@ -582,6 +582,17 @@ body {
   100% { opacity: 0; }
 }
 
+/* ── 필터 섹션 dim 처리 ──────────────────────── */
+.filter-section {
+  transition: opacity 0.2s;
+  border-radius: 8px;
+}
+.filter-section.dimmed {
+  opacity: 0.3;
+  pointer-events: none;
+  filter: grayscale(50%);
+}
+
 /* Leaflet override */
 .leaflet-container { font-family: 'Noto Sans KR', sans-serif; }
 .leaflet-control-attribution { font-size: 9px !important; }

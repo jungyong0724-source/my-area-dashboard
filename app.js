@@ -327,6 +327,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // 고객유형(업종) / 산업분류(10차) – dim 대상 섹션
+  const sectionType = document.getElementById('section-type');
+  const sectionCls  = document.getElementById('section-cls');
+
   // 고객유형(업종) 연쇄 드롭다운
   const typeL1 = document.getElementById('filter-type-l1');
   const typeL2 = document.getElementById('filter-type-l2');
@@ -341,8 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 대분류 채우기
   if (typeof INDUSTRY_TYPE_DATA !== 'undefined') {
     Object.entries(INDUSTRY_TYPE_DATA).sort((a,b) => a[0].localeCompare(b[0])).forEach(([code, v]) => {
-      const opt = new Option(`${v.name}`, code);
-      typeL1.appendChild(opt);
+      typeL1.appendChild(new Option(v.name, code));
     });
   }
   resetSelect(typeL2, '중분류');
@@ -353,10 +356,10 @@ document.addEventListener('DOMContentLoaded', () => {
     resetSelect(typeL2, '중분류');
     resetSelect(typeL3, '소분류');
     resetSelect(typeL4, '세분류');
+    setDim();
     const lc = typeL1.value;
     if (!lc || !INDUSTRY_TYPE_DATA[lc]) return;
-    const midData = INDUSTRY_TYPE_DATA[lc].mid;
-    Object.entries(midData).sort((a,b) => a[0].localeCompare(b[0])).forEach(([code, v]) => {
+    Object.entries(INDUSTRY_TYPE_DATA[lc].mid).sort((a,b) => a[0].localeCompare(b[0])).forEach(([code, v]) => {
       typeL2.appendChild(new Option(v.name, code));
     });
     typeL2.disabled = false;
@@ -366,8 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resetSelect(typeL4, '세분류');
     const lc = typeL1.value, mc = typeL2.value;
     if (!mc) return;
-    const smallData = INDUSTRY_TYPE_DATA[lc].mid[mc].small;
-    Object.entries(smallData).sort((a,b) => a[0].localeCompare(b[0])).forEach(([code, v]) => {
+    Object.entries(INDUSTRY_TYPE_DATA[lc].mid[mc].small).sort((a,b) => a[0].localeCompare(b[0])).forEach(([code, v]) => {
       typeL3.appendChild(new Option(v.name, code));
     });
     typeL3.disabled = false;
@@ -398,10 +400,17 @@ document.addEventListener('DOMContentLoaded', () => {
   resetSelect(clsL3, '3단계');
   resetSelect(clsL4, '4단계 (이하 선택 시 실적용)');
 
+  // dim 토글 함수 (두 섹션 변수가 모두 선언된 뒤에 정의)
+  const setDim = () => {
+    sectionCls.classList.toggle('dimmed',  !!typeL1.value);
+    sectionType.classList.toggle('dimmed', !!clsL1.value);
+  };
+
   clsL1.addEventListener('change', () => {
     resetSelect(clsL2, '2단계');
     resetSelect(clsL3, '3단계');
     resetSelect(clsL4, '4단계 (이하 선택 시 실적용)');
+    setDim();
     const lc = clsL1.value;
     if (!lc || !INDUSTRY_CLASS_DATA[lc]) return;
     Object.entries(INDUSTRY_CLASS_DATA[lc].mid).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([code,v]) => {
@@ -414,8 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resetSelect(clsL4, '4단계 (이하 선택 시 실적용)');
     const lc = clsL1.value, mc = clsL2.value;
     if (!mc) return;
-    const smallData = INDUSTRY_CLASS_DATA[lc].mid[mc].small;
-    Object.entries(smallData).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([code, name]) => {
+    Object.entries(INDUSTRY_CLASS_DATA[lc].mid[mc].small).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([code, name]) => {
       clsL3.appendChild(new Option(name, code));
     });
     clsL3.disabled = false;
@@ -435,6 +443,8 @@ document.addEventListener('DOMContentLoaded', () => {
     typeL1.value = ''; resetSelect(typeL2,'중분류'); resetSelect(typeL3,'소분류'); resetSelect(typeL4,'세분류');
     clsL1.value = ''; resetSelect(clsL2,'2단계'); resetSelect(clsL3,'3단계'); resetSelect(clsL4,'4단계 (이하 선택 시 실적용)');
     document.getElementById('filter-revenue').value = '';
+    sectionType.classList.remove('dimmed');
+    sectionCls.classList.remove('dimmed');
   });
   document.getElementById('btn-apply-filter').addEventListener('click', () => {
     document.getElementById('btn-filter').classList.add('active');
