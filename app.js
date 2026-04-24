@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .setView(center, 12);
     L.tileLayer(TILE_URL, { attribution: TILE_ATTR }).addTo(mainMap);
 
-    MOCK_DATA.forEach(d => {
+    getCustomersByChip('recent').forEach(d => {
       const marker = L.marker([d.lat, d.lng], { icon: makeCircleIcon('#0060A9', 16) })
         .addTo(mainMap)
         .bindTooltip(d.companyName, { permanent: false, direction: 'top' });
@@ -72,12 +72,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ══════════════════════════════════════════════════════
-  // 3. 메인 칩 (단일 선택)
+  // 3. 메인 칩 (단일 선택 + 리스트 갱신)
   // ══════════════════════════════════════════════════════
   document.querySelectorAll('.radio-chip-inline').forEach(chip => {
     chip.addEventListener('click', () => {
       document.querySelectorAll('.radio-chip-inline').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
+      const chipKey = chip.dataset.chip;
+      renderMainList(chipKey);
+      // 지도 마커 갱신
+      if (mainMap) {
+        mainMarkers.forEach(m => mainMap.removeLayer(m));
+        mainMarkers = [];
+        getCustomersByChip(chipKey).forEach(d => {
+          const marker = L.marker([d.lat, d.lng], { icon: makeCircleIcon('#0060A9', 16) })
+            .addTo(mainMap)
+            .bindTooltip(d.companyName, { permanent: false, direction: 'top' });
+          marker.on('click', () => openCustomerDetail(d));
+          mainMarkers.push(marker);
+        });
+        if (mainMarkers.length > 0) {
+          const first = getCustomersByChip(chipKey)[0];
+          mainMap.setView([first.lat, first.lng], 12);
+        }
+      }
     });
   });
 
@@ -159,12 +177,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // ══════════════════════════════════════════════════════
   // 5. 고객 카드 렌더링
   // ══════════════════════════════════════════════════════
-  const renderMainList = () => {
+  const renderMainList = (chip = 'recent') => {
+    const data_list = getCustomersByChip(chip);
     const list = document.getElementById('main-card-list');
     list.innerHTML = '';
-    document.getElementById('result-count').textContent = MOCK_DATA.length;
+    document.getElementById('result-count').textContent = data_list.length;
 
-    MOCK_DATA.forEach(data => {
+    data_list.forEach(data => {
       const card = document.createElement('div');
       card.className = 'customer-card';
       const tagsHtml = data.tags.map(t => `<span class="tag-outline">${t}</span>`).join('');
